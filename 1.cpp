@@ -1,26 +1,43 @@
 #include <iostream>
-#include<list>
+#include <stack>
 using namespace std;
 
-void printL(list<int>& l) {
-    for (auto i : l)
-        cout << i << " ";
-    cout << '\n';
+// Функция для вывода содержимого стека
+void printStack(stack<int> s) {
+    while (!s.empty()) {
+        cout << s.top() << " ";  // Выводим верхний элемент
+        s.pop();                 // Удаляем верхний элемент
+    }
+    cout << endl;
 }
 
 int main() {
+    // Создаем пустой стек
+    stack<int> s1;
     
-    // создаем пустой список
-    list<int> l1;
-
-    // создаем список из списка инициализаторов
-    stack<int> l2 = {1, 3, 4, 2, 5};
-
-    //создаем список с заданным размером
-    stack<int> l3(5, 9);
+    // Создаем стек и заполняем его элементами
+    stack<int> s2;
+    s2.push(1);  // Добавляем элементы в стек
+    s2.push(3);
+    s2.push(4);
+    s2.push(2);
+    s2.push(5);
     
-    printL(l1);
-    printL(l2);
-    printL(l3);
+    // Создаем стек с пятью одинаковыми элементами
+    stack<int> s3;
+    for (int i = 0; i < 5; i++) {
+        s3.push(9);  // Добавляем число 9 пять раз
+    }
+    
+    // Вывод стеков
+    cout << "Стек 1: ";
+    printStack(s1);
+    
+    cout << "Стек 2: ";
+    printStack(s2);
+    
+    cout << "Стек 3: ";
+    printStack(s3);
+    
     return 0;
 }
