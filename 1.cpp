@@ -1,8 +1,8 @@
 #include <iostream>
-#include<stack>
+#include<list>
 using namespace std;
 
-void printL(stack<int>& l) {
+void printL(list<int>& l) {
     for (auto i : l)
         cout << i << " ";
     cout << '\n';
@@ -11,7 +11,7 @@ void printL(stack<int>& l) {
 int main() {
     
     // создаем пустой список
-    stack<int> l1;
+    list<int> l1;
 
     // сощздаем список из списка инициализаторов
     stack<int> l2 = {1, 3, 4, 2, 5};
