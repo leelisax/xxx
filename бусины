@@ -1,0 +1,170 @@
+> lisa:
+Алгоритм сортировки бусинами на C++
+
+`cpp
+#include <iostream>
+#include <vector>
+#include <algorithm>
+
+// Основная реализация алгоритма
+std::vector<int> beadSort(std::vector<int> arr) {
+    if (arr.empty() || arr.size() < 2) {
+        return arr;
+    }
+    
+    // Шаг 1: Находим максимальный элемент
+    int maxVal = *std::max_element(arr.begin(), arr.end());
+    int n = arr.size();
+    
+    // Шаг 2: Создаем матрицу бусин
+    std::vector<std::vector<int>> beads(n, std::vector<int>(maxVal, 0));
+    
+    // Нанизываем бусины
+    for (int i = 0; i < n; i++) {
+        for (int j = 0; j < arr[i]; j++) {
+            beads[i][j] = 1;
+        }
+    }
+    
+    // Шаг 3: Даем бусинам упасть
+    for (int j = 0; j < maxVal; j++) {
+        int count = 0;
+        
+        // Считаем количество бусин в столбце
+        for (int i = 0; i < n; i++) {
+            count += beads[i][j];
+            beads[i][j] = 0;
+        }
+        
+        // Размещаем бусины внизу столбца
+        for (int i = n - count; i < n; i++) {
+            beads[i][j] = 1;
+        }
+    }
+    
+    // Шаг 4: Собираем результат
+    std::vector<int> result;
+    for (int i = 0; i < n; i++) {
+        int count = 0;
+        for (int j = 0; j < maxVal; j++) {
+            count += beads[i][j];
+        }
+        result.push_back(count);
+    }
+    
+    return result;
+}
+
+// Оптимизированная версия (без явной матрицы)
+std::vector<int> beadSortOptimized(std::vector<int> arr) {
+    if (arr.empty()) {
+        return arr;
+    }
+    
+    int maxVal = *std::max_element(arr.begin(), arr.end());
+    int n = arr.size();
+    
+    // Создаем счетчики для каждого столбца
+    std::vector<int> beads(maxVal, 0);
+    
+    // Распределяем бусины по столбцам
+    for (int num : arr) {
+        for (int i = 0; i < num; i++) {
+            beads[i]++;
+        }
+    }
+    
+    // Собираем результат
+    std::vector<int> result;
+    for (int i = 0; i < n; i++) {
+        int value = 0;
+        for (int j = 0; j < maxVal; j++) {
+            if (beads[j] >= n - i) {
+                value++;
+            }
+        }
+        result.push_back(value);
+    }
+    
+    return result;
+}
+
+// Визуализация процесса (для демонстрации)
+void visualizeBeadSort(const std::vector<int>& arr) {
+    if (arr.empty()) return;
+    
+    int maxVal = *std::max_element(arr.begin(), arr.end());
+    int n = arr.size();
+    
+    std::cout << "Исходный массив: ";
+    for (int num : arr) std::cout << num << " ";
+    std::cout << "\n\n";
+    
+    // Создаем и визуализируем начальное состояние
+    std::vector<std::vector<char>> beads(n, std::vector<char>(maxVal, ' '));
+    for (int i = 0; i < n; i++) {
+        for (int j = 0; j < arr[i]; j++) {
+            beads[i][j] = 'O';
+        }
+    }
+    
+    std::cout << "До сортировки:\n";
+    for (int i = 0; i < n; i++) {
+        std::cout << "Строка " << i << ": ";
+        for (int j = 0; j < maxVal; j++) {
+            std::cout << beads[i][j] << " ";
+        }
+        std::cout << "\n";
+    }
+    
+    // Выполняем сортировку
+    auto sorted = beadSort(arr);
+    
+    std::cout << "\nПосле сортировки: ";
+    for (int num : sorted) std::cout << num << " ";
+    std::cout << "\n";
+}
+
+// Тестирование
+int main() {
+    // Тестовые данные
+    std::vector<int> test1 = {3, 1, 4, 1, 5, 9, 2, 6};
+    std::vector<int> test2 = {5, 2, 8, 1, 9};
+    std::vector<int> test3 = {1};
+    std::vector<int> test4 = {7, 3, 0, 2, 5};
+    
+    std::cout << "=== Сортировка бусинами ===\n\n";
+    
+    // Тест 1
+    std::cout << "Тест 1:\n";
+    visualizeBeadSort(test1);
+    auto result1 = beadSortOptimized(test1);
+    std::cout << "Оптимизированная версия: ";
+    for (int num : result1) std::cout << num << " ";
+    std::cout << "\n\n";
+    
+    // Тест 2
+    std::cout << "Тест 2:\n";
+    std::cout << "Исходный: ";
+    for (int num : test2) std::cout << num << " ";
+
+> lisa:
+auto result2 = beadSortOptimized(test2);
+    std::cout << "\nОтсортированный: ";
+    for (int num : result2) std::cout << num << " ";
+    std::cout << "\n\n";
+    
+    // Тест 3
+    std::cout << "Тест 3 (один элемент):\n";
+    auto result3 = beadSortOptimized(test3);
+    for (int num : result3) std::cout << num << " ";
+    std::cout << "\n\n";
+    
+    // Тест 4 (с нулем)
+    std::cout << "Тест 4 (с нулем):\n";
+    auto result4 = beadSortOptimized(test4);
+    for (int num : result4) std::cout << num << " ";
+    std::cout << "\n";
+    
+    return 0;
+}
