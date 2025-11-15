@@ -1,0 +1,113 @@
+def first_fit(items, bin_capacity):
+    """
+    First Fit (FF): размещаем каждый предмет в первый подходящий контейнер.
+    Если ни один не подходит — создаём новый.
+    
+    Args:
+        items: список размеров предметов
+        bin_capacity: вместимость одного контейнера
+    
+    Returns:
+        Список контейнеров (каждый — список предметов)
+    """
+    bins = []  # Контейнеры: каждый — список размещённых предметов
+    
+    for item in items:
+        # Ищем первый контейнер, куда поместится item
+        for bin in bins:
+            if sum(bin) + item <= bin_capacity:
+                bin.append(item)
+                break  # Предмет размещён — переходим к следующему
+        else:
+            # Ни один контейнер не подошёл — создаём новый
+            bins.append([item])
+    
+    return bins
+
+
+
+def first_fit_decreasing(items, bin_capacity):
+    """
+    First Fit Decreasing (FFD): сортируем предметы по убыванию, затем применяем FF.
+    
+    Args:
+        items: список размеров предметов
+        bin_capacity: вместимость одного контейнера
+    
+    Returns:
+        Список контейнеров (каждый — список предметов)
+    """
+    # Сортируем по убыванию: большие предметы размещаем первыми
+    sorted_items = sorted(items, reverse=True)
+    return first_fit(sorted_items, bin_capacity)
+
+
+
+def best_fit(items, bin_capacity):
+    """
+    Best Fit: размещаем предмет в контейнер с минимальным остаточным объёмом
+    после размещения (но достаточным для предмета).
+    Если нет подходящего — создаём новый контейнер.
+    
+    Args:
+        items: список размеров предметов
+        bin_capacity: вместимость одного контейнера
+    
+    Returns:
+        Список контейнеров (каждый — список предметов)
+    """
+    bins = []  # Контейнеры
+    
+    for item in items:
+        best_bin_idx = None      # Индекс лучшего контейнера
+        min_remaining = bin_capacity + 1  # Минимум остаточного пространства
+        
+        # Проходим по всем контейнерам, ищем оптимальный
+        for i, bin in enumerate(bins):
+            current_sum = sum(bin)
+            if current_sum + item <= bin_capacity:
+                remaining = bin_capacity - (current_sum + item)
+                if remaining < min_remaining:
+                    min_remaining = remaining
+                    best_bin_idx = i
+        
+        if best_bin_idx is not None:
+            bins[best_bin_idx].append(item)
+        else:
+            # Нет подходящего контейнера — создаём новый
+            bins.append([item])
+    
+    return bins
+
+
+
+def print_results(strategy_name, bins):
+    """
+    Выводит результаты упаковки для заданной стратегии.
+    
+    Args:
+        strategy_name: название стратегии
+        bins: список контейнеров
+    """
+    print(f"\n{strategy_name}:")
+    for i, bin in enumerate(bins, 1):
+        print(f"  Контейнер {i}: {bin} (сумма = {sum(bin)})")
+    print(f"  Всего контейнеров: {len(bins)}")
+
+
+
+# Входные данные
+items = [7, 5, 3, 8, 2, 6, 4, 9]
+bin_capacity = 10
+
+# Запускаем все стратегии
+ff_bins = first_fit(items, bin_capacity)
+ffd_bins = first_fit_decreasing(items, bin_capacity)
+bf_bins = best_fit(items, bin_capacity)
+
+# Выводим результаты
+print("Исходные предметы:", items)
+print("Вместимость контейнера:", bin_capacity)
+print_results("First Fit (FF)", ff_bins)
+print_results("First Fit Decreasing (FFD)", ffd_bins)
+print_results("Best Fit (BF)", bf_bins)
