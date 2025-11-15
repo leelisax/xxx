@@ -1,0 +1,117 @@
+#include <vector>
+#include <queue>
+#include <set>
+#include <algorithm>
+
+using namespace std;
+
+struct State {
+    vector<int> board;  // текущее состояние поля (16 элементов)
+    int moves;          // количество сделанных ходов (g)
+    int heuristic;      // эвристика (h)
+    
+    // Для приоритетной очереди: меньший приоритет у большего f = g + h
+    bool operator<(const State& other) const {
+        return (moves + heuristic) > (other.moves + other.heuristic);
+    }
+};
+
+// Проверка, является ли состояние целевым (1..15, 0 в конце)
+bool isGoal(const vector<int>& board) {
+    for (int i = 0; i < 15; ++i) {
+        if (board[i] != i + 1) return false;
+    }
+    return board[15] == 0;
+}
+
+// Эвристика: сумма расстояний Манхэттена для всех плиток
+int heuristic(const vector<int>& board) {
+    int sum = 0;
+    for (int i = 0; i < 16; ++i) {
+        if (board[i] == 0) continue;  // пропускаем пустую клетку
+        int target_row = (board[i] - 1) / 4;
+        int target_col = (board[i] - 1) % 4;
+        int curr_row = i / 4;
+        int curr_col = i % 4;
+        sum += abs(target_row - curr_row) + abs(target_col - curr_col);
+    }
+    return sum;
+}
+
+// Находим индекс пустой клетки (0)
+int findZero(const vector<int>& board) {
+    for (int i = 0; i < 16; ++i) {
+        if (board[i] == 0) return i;
+    }
+    return -1;
+}
+
+// Генерируем все допустимые соседи (ходы)
+vector<vector<int>> getNeighbors(const vector<int>& board) {
+    vector<vector<int>> neighbors;
+    int zero_idx = findZero(board);
+    int row = zero_idx / 4;
+    int col = zero_idx % 4;
+
+    // Возможные направления: вверх, вниз, влево, вправо
+    int dr[] = {-1, 1, 0, 0};
+    int dc[] = {0, 0, -1, 1};
+
+    for (int d = 0; d < 4; ++d) {
+        int new_row = row + dr[d];
+        int new_col = col + dc[d];
+        
+        // Проверяем границы поля
+        if (new_row < 0 || new_row >= 4 || new_col < 0 || new_col >= 4) {
+            continue;
+        }
+        
+        int new_idx = new_row * 4 + new_col;
+        vector<int> new_board = board;
+        
+        // Меняем местами пустую клетку и соседнюю плитку
+        swap(new_board[zero_idx], new_board[new_idx]);
+        neighbors.push_back(new_board);
+    }
+    
+    return neighbors;
+}
+
+int aStarPuzzle(const vector<int>& start) {
+    priority_queue<State, vector<State>, Compare> open;
+    set<vector<int>> closed;
+    
+    open.push({start, 0, heuristic(start)});
+    
+    while (!open.empty()) {
+        State curr = open.top();
+        open.pop();
+        
+        if (isGoal(curr.board)) {
+            return curr.moves;
+        }
+        
+        if (closed.count(curr.board)) {
+            continue;
+        }
+        
+        closed.insert(curr.board);
+        
+        // Генерируем всех соседей (допустимые ходы)
+        vector<vector<int>> neighbors = getNeighbors(curr.board);
+        
+        for (const vector<int>& next_board : neighbors) {
+            // Пропускаем уже обработанные состояния
+            if (closed.find(next_board) != closed.end()) {
+                continue;
+            }
+            
+            int g = curr.moves + 1;  // новый g: на 1 ход больше
+            int h = heuristic(next_board);  // вычисляем эвристику
+            
+            open.push({next_board, g, h});
+        }
+    }
+    
+    return -1;  // решение не найдено
+}
