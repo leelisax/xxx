@@ -1,0 +1,72 @@
+#include <iostream>
+#include <queue>
+#include <vector>
+#include <string>
+#include <functional>
+
+using namespace std;
+
+// Пользовательская структура для хранения заданий с приоритетом
+struct Task {
+    int id;
+    string description;
+    int priority;
+    
+    Task(int _id, const string& _desc, int _prio) : id(_id), description(_desc), priority(_prio) {}
+    
+    // Оператор сравнения для сортировки по приоритету (для max-heap)
+    bool operator<(const Task& other) const {
+        return priority < other.priority; // Максимальные приоритеты будут первыми
+    }
+};
+
+// Операция вывода задания в поток
+ostream& operator<<(ostream& out, const Task& t) {
+    out << "Задача №" << t.id << ": '" << t.description << "' (" << t.priority << ")";
+    return out;
+}
+
+int main() {
+    // Обычная очередь (FIFO)
+    queue<string> tasksFifo;
+    tasksFifo.push("Подготовить отчет");
+    tasksFifo.push("Провести совещание");
+    tasksFifo.push("Отправить письма клиентам");
+
+    cout << "Обычная очередь (FIFO):\\n";
+    while(!tasksFifo.empty()) {
+        cout << "- " << tasksFifo.front() << '\\n';
+        tasksFifo.pop();
+    }
+
+    // Создаем приоритетную очередь (по максимальному приоритету)
+    priority_queue<Task> prioritizedTasks;
+    prioritizedTasks.emplace(Task(1, "Отчет квартального анализа", 3));
+    prioritizedTasks.emplace(Task(2, "Встреча с инвесторами", 5));
+    prioritizedTasks.emplace(Task(3, "Подготовка презентации", 2));
+
+    cout << "\\nПриоритетная очередь (Max-Heap):\\n";
+    while(!prioritizedTasks.empty()) {
+        cout << "- " << prioritizedTasks.top() << '\\n'; // Извлекаем верхнее задание
+        prioritizedTasks.pop(); // Убираем обработанное задание
+    }
+
+    // Мин-куча (приоритеты от наименьшего к наибольшему)
+    priority_queue<int, vector<int>, greater<int>> minHeap;
+    minHeap.push(10); minHeap.push(30); minHeap.push(20);
+
+    cout << "\\nМинимальная куча (Min-Heap):\\n";
+    while(!minHeap.empty()) {
+        cout << "- " << minHeap.top() << '\\n';
+        minHeap.pop();
+    }
+
+    return 0;
+}
+
+▌ Что изменилось?
+
+- Код теперь организован яснее, разделение функций и структур улучшилось.
+- Использованы современные методы добавления объектов (emplace) и улучшена читаемость программы.
+- Демонстрация работы обычных очередей (std::queue), приоритетных очередей (std::priority_queue) и минимальных куч стала нагляднее.
+- Дополнительно реализована структура Task с выводом в поток для лучшего понимания содержимого очереди.
