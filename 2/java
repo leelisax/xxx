@@ -1,0 +1,70 @@
+import java.util.*;
+
+public class MultilistExample {
+    public static void main(String[] args) {
+        // Создаем многомерный список имен сотрудников
+        List<List<String>> employeeGroups = new ArrayList<>();
+        
+        // Наполняем группы сотрудниками
+        employeeGroups.add(Arrays.asList("Иван", "Сергей"));
+        employeeGroups.add(Arrays.asList("Анна", "Михаил"));
+        employeeGroups.add(Arrays.asList("Елена", "Дмитрий"));
+
+        System.out.println("Вложенный список сотрудников: " + employeeGroups);
+
+        // Конвертация вложенной структуры в плоский список
+        List<String> flattenedEmployees = new ArrayList<>();
+        for (List<String> group : employeeGroups) {
+            flattenedEmployees.addAll(group);
+        }
+
+        System.out.println("Финальный плоский список сотрудников: " + flattenedEmployees);
+    }
+}
+import java.util.*;
+
+public class QueueExample {
+    public static void main(String[] args) {
+        // Создание стандартной очереди
+        Queue<String> taskQueue = new LinkedList<>();
+
+        // Добавляем задачи в очередь
+        taskQueue.add("Первая задача");
+        taskQueue.offer("Вторая задача"); // аналогично add()
+        taskQueue.add("Третья задача");
+
+        System.out.println("Очередь задач: " + taskQueue);
+
+        // Последовательно выполняем задачи
+        while (!taskQueue.isEmpty()) {
+            String currentTask = taskQueue.poll(); // получаем и удаляем первую задачу
+            System.out.println("Выполнена задача: " + currentTask);
+        }
+    }
+}
+import java.util.*;
+
+public class DequeExample {
+    public static void main(String[] args) {
+        // Создаем двустороннюю очередь
+        Deque<String> doubleEndedQueue = new ArrayDeque<>();
+
+        // Добавляем элементы в начало и конец
+        doubleEndedQueue.addFirst("Начальное значение");
+        doubleEndedQueue.addLast("Промежуточное значение");
+        doubleEndedQueue.offerFirst("Очень начальное значение");
+        doubleEndedQueue.offerLast("Последнее значение");
+
+        System.out.println("Двухсторонняя очередь: " + doubleEndedQueue);
+
+        // Получаем первый и последний элементы
+        System.out.println("Первый элемент: " + doubleEndedQueue.getFirst());
+        System.out.println("Последний элемент: " + doubleEndedQueue.getLast());
+
+        // Поочередно удаляем элементы с начала
+        while (!doubleEndedQueue.isEmpty()) {
+            String removedElement = doubleEndedQueue.pollFirst();
+            System.out.println("Удалённый элемент: " + removedElement);
+        }
+    }
+}
