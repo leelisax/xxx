@@ -2,8 +2,13 @@
 #include <algorithm>
 #include <random>
 #include <numeric>
+#include <iostream>
 
 using namespace std;
+
+// Глобальный генератор случайных чисел
+random_device rd;
+mt19937 gen(rd());
 
 // 1. Инициализация популяции: случайные перестановки городов
 vector<vector<int>> initPopulation(int popSize, int nCities) {
@@ -13,7 +18,7 @@ vector<vector<int>> initPopulation(int popSize, int nCities) {
 
     for (int i = 0; i < popSize; ++i) {
         vector<int> individual = cities;
-        shuffle(individual.begin(), individual.end(), mt19937(random_device{}()));
+        shuffle(individual.begin(), individual.end(), gen);
         population.push_back(individual);
     }
     return population;
@@ -40,8 +45,9 @@ vector<int> selectParent(const vector<vector<int>>& population, const vector<dou
     vector<int> candidates(k);
 
     // Выбираем k случайных кандидатов
+    uniform_int_distribution<> dis(0, n - 1);
     for (int i = 0; i < k; ++i) {
-        candidates[i] = rand() % n;
+        candidates[i] = dis(gen);
     }
 
     // Находим кандидата с максимальным фитнесом
@@ -60,8 +66,9 @@ vector<int> orderedCrossover(const vector<int>& parent1, const vector<int>& pare
     vector<int> child(n, -1);  // -1 означает "пусто"
 
     // Выбираем случайный отрезок [start, end]
-    int start = rand() % n;
-    int end = rand() % n;
+    uniform_int_distribution<> dis(0, n - 1);
+    int start = dis(gen);
+    int end = dis(gen);
     if (start > end) swap(start, end);
 
     // Копируем отрезок из parent1 в child
@@ -88,16 +95,20 @@ vector<int> orderedCrossover(const vector<int>& parent1, const vector<int>& pare
 
 // 5. Мутация: случайная перестановка двух городов
 void mutate(vector<int>& individual, double mutationRate = 0.1) {
-    if ((double)rand() / RAND_MAX < mutationRate) {
-        int i = rand() % individual.size();
-        int j = rand() % individual.size();
+    uniform_real_distribution<> realDis(0.0, 1.0);
+    if (realDis(gen) < mutationRate) {
+        uniform_int_distribution<> intDis(0, individual.size() - 1);
+        int i = intDis(gen);
+        int j = intDis(gen);
         swap(individual[i], individual[j]);
     }
 }
 
 // 6. Основной алгоритм TSP с ГА
-vector<int> gaTsp(const vector<vector<int>>& dist, int popSize, int generations) {
+vector<int> gaTsp(const vector<vector<int>>& dist, int popSize = 100, int generations = 500) {
     int nCities = dist.size();
+    if (nCities == 0) return {};
+
     vector<vector<int>> population = initPopulation(popSize, nCities);
 
     for (int gen = 0; gen < generations; ++gen) {
@@ -134,6 +145,28 @@ vector<int> gaTsp(const vector<vector<int>>& dist, int popSize, int generations)
 
     return population[bestIdx];  // Возвращаем лучший маршрут
 }
+
+// Пример использования
+int main() {
+    // Пример матрицы расстояний (4 города)
+    vector<vector<int>> dist = {
+        {0, 10, 15, 20},
+        {10, 0, 35, 25},
+        {15, 35, 0, 30},
+        {20, 25, 30, 0}
+    };
+
+    vector<int> bestRoute = gaTsp(dist, 100, 500);
+
+    cout << "Лучший маршрут: ";
+    for (int city : bestRoute) {
+        cout << city << " ";
+    }
+    cout << endl;
+
+    return 0;
+}
+
 
 
 
