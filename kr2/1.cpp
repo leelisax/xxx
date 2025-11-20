@@ -134,3 +134,10 @@ vector<int> gaTsp(const vector<vector<int>>& dist, int popSize, int generations)
 
     return population[bestIdx];  // Возвращаем лучший маршрут
 }
+
+
+
+
+
+vector<int> bestRoute = gaTsp(dist, 50, 100);
+// bestRoute может быть, например: [0, 2, 1, 3]
