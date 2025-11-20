@@ -11,3 +11,6 @@ vector<int> gaTsp(const vector<vector<int>>& dist, int popSize, int generations)
  // обновить population
  // Вернуть лучший маршрут
 }
+
+Что дописать: функции отбора (например, турнирным методом), OX‑кроссовера и
+мутации перестановки.
