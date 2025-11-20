@@ -71,6 +71,6 @@ void mutate(vector<int>& individual, double mutationRate = 0.1)
 - Возвращается этот маршрут.
 
 ### Временная сложность:
-$$ \boxed{O(G \cdot P \cdot n^2)} $$
+O(G*P*n^2)
 ​
 
